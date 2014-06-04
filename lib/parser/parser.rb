@@ -1,5 +1,7 @@
 require_relative "../lexer/lexer"
 require_relative "./dot_syntax_exception"
+require_relative "./ast"
+
 
 class Parser
   def initialize(lexer)
@@ -7,7 +9,7 @@ class Parser
     @lexer.tokenize
   end
 
-  def parse_statement_list 
+  def parse_statement_list
     match_keyword(KeyWord::DIGRAPH)
     match_id
     match(TokenType::LBRACE)
@@ -16,7 +18,7 @@ class Parser
 
   def parse_statement
     parse_appropriate_grammer_based_on_token
-    @lexer.lookahead_token.type == TokenType::RBRACE ? 
+    @lexer.lookahead_token.type == TokenType::RBRACE ?
       match(TokenType::RBRACE) : parse_statement
   end
 
@@ -80,8 +82,8 @@ class Parser
   def match_id
     check_for_nil_token(TokenType::ID)
     lookahead_type = @lexer.lookahead_token.type
-    if lookahead_type == TokenType::ID || 
-      lookahead_type == TokenType::NUMBER || 
+    if lookahead_type == TokenType::ID ||
+      lookahead_type == TokenType::NUMBER ||
       lookahead_type == TokenType::STRING
       consume_token
     else
@@ -99,7 +101,7 @@ class Parser
   def match_keyword(keyword)
     check_for_nil_token(keyword)
     lookahead_value = @lexer.lookahead_token.value
-    lookahead_value == keyword ? consume_token : 
+    lookahead_value == keyword ? consume_token :
       raise_syntax_error(keyword, lookahead_value)
   end
 
@@ -109,7 +111,6 @@ class Parser
 
   def raise_syntax_error(expected, actual)
     raise DotSyntaxException, "Expected: #{expected}\n Got: #{actual}"
-    # TODO: improve error message
   end
 
   def check_for_nil_token(expected)

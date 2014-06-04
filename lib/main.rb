@@ -1,6 +1,8 @@
 require_relative "./lexer/lexer"
 require_relative "./parser/parser"
 
+
+
 healthy_code = <<-CODE
 digraph G {
     main [shape=box]; /* missing the closing ] */
