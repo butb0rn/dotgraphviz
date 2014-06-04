@@ -1,0 +1,1 @@
+class DotSyntaxException < Exception; end

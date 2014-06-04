@@ -1,0 +1,10 @@
+** graph:  [ strict ] (graph | digraph) [ ID ] '{' stmt_list '}'
+** stmt_list:  node_stmt                                  -> DONE
+              | edge_stmt                                 -> DONE
+** attr_stmt: (graph | node | edge) attr_list             -> DONE
+** attr_list:  '[' [ a_list ] ']' [ attr_list ]           -> DONE
+** a_list: ID '=' ID [ (';' | ',') ] [ a_list ]           -> DONE
+** edge_stmt:  (node_id | subgraph) edgeRHS [ attr_list ] -> DONE
+** edgeRHS:  edgeop (node_id | subgraph) [ edgeRHS ]      -> DONE
+** node_stmt:  node_id [ attr_list ]                      -> DONE
+** node_id:  ID [ port ]                                  -> DONE
