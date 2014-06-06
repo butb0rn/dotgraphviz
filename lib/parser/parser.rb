@@ -12,18 +12,24 @@ class Parser
   def parse_statement_list
     match_keyword(KeyWord::DIGRAPH)
     node = AST.new("DIGRAPH")
-    child_node = match_id
-    node.add_child(child_node)
+    node_with_child = match_id
+    node.add_child(node_with_child)
     match(TokenType::LBRACE)
-    child_node.add_child(parse_statement)
+    node_with_child.add_child(parse_statement)
+    node_with_child.add_child(continue_parsing)
     return node
   end
 
   def parse_statement
-    node = parse_appropriate_grammer_based_on_token
-    @lexer.lookahead_token.type == TokenType::RBRACE ?
-      match(TokenType::RBRACE) : node.add_child(parse_statement)
-    return node
+    return parse_appropriate_grammer_based_on_token
+  end
+
+  def continue_parsing
+    if @lexer.lookahead_token.type == TokenType::RBRACE
+      match(TokenType::RBRACE)
+    else
+       parse_statement
+    end
   end
 
   def parse_appropriate_grammer_based_on_token
@@ -52,6 +58,11 @@ class Parser
     node.add_child(node_with_child)
     if @lexer.lookahead_token.type == TokenType::LBRACK
       node_with_child.add_child(parse_attr_list)
+      while @lexer.lookahead_token && @lexer.lookahead_token.type == TokenType::COMMA
+        match(TokenType::COMMA)
+        node_with_child.add_child(parse_a_list)
+      end
+      match(TokenType::RBRACK)
     end
       match(TokenType::SEMICOLON)
     return node
@@ -71,7 +82,6 @@ class Parser
   def parse_attr_list
     match(TokenType::LBRACK)
     node = parse_a_list
-    match(TokenType::RBRACK)
     return node
   end
 
@@ -80,10 +90,6 @@ class Parser
     node.add_child(match_id)
     match(TokenType::ASSIGNMENT)
     node.add_child(match_id)
-    while @lexer.lookahead_token && @lexer.lookahead_token.type == TokenType::COMMA
-      match(TokenType::COMMA)
-      node.add_child(parse_a_list)
-    end
     return node
   end
 
