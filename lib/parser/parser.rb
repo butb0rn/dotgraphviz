@@ -11,15 +11,19 @@ class Parser
 
   def parse_statement_list
     match_keyword(KeyWord::DIGRAPH)
-    match_id
+    node = AST.new("DIGRAPH")
+    child_node = match_id
+    node.add_child(child_node)
     match(TokenType::LBRACE)
-    parse_statement
+    child_node.add_child(parse_statement)
+    return node
   end
 
   def parse_statement
-    parse_appropriate_grammer_based_on_token
+    node = parse_appropriate_grammer_based_on_token
     @lexer.lookahead_token.type == TokenType::RBRACE ?
       match(TokenType::RBRACE) : parse_statement
+    return node
   end
 
   def parse_appropriate_grammer_based_on_token
@@ -27,7 +31,7 @@ class Parser
     token_type = @lexer.lookahead_token.type
     @lexer.revert_token
     if token_type == TokenType::ARROW
-      parse_edge_statement
+      return parse_edge_statement
     elsif @lexer.lookahead_token.type == KeyWord::NODE.upcase.to_sym
       parse_attr_statement
     else
@@ -42,10 +46,14 @@ class Parser
   end
 
   def parse_edge_statement
-    parse_node_id
-    parse_edgeRHS
-    parse_attr_list if @lexer.lookahead_token.type == TokenType::LBRACK
+    node = AST.new("ARROW")
+    x = parse_node_id
+    node.add_child(x)
+    child_node = parse_edgeRHS
+    node.add_child(child_node)
+    child_node.add_child(parse_attr_list) if @lexer.lookahead_token.type == TokenType::LBRACK
     match(TokenType::SEMICOLON)
+    return node
   end
 
   def parse_attr_statement
@@ -56,7 +64,7 @@ class Parser
 
   def parse_edgeRHS
     match(TokenType::ARROW)
-    parse_node_id
+    return parse_node_id
   end
 
   def parse_attr_list
@@ -66,29 +74,34 @@ class Parser
   end
 
   def parse_a_list
-    match_id
+    node = AST.new("ASSIGNMENT")
+    node.add_child(match_id)
     match(TokenType::ASSIGNMENT)
-    match_id
+    node.add_child(match_id)
     while @lexer.lookahead_token && @lexer.lookahead_token.type == TokenType::COMMA
       match(TokenType::COMMA)
       parse_a_list
     end
+    return node
   end
 
   def parse_node_id
-    match_id
+    return match_id
   end
 
   def match_id
     check_for_nil_token(TokenType::ID)
-    lookahead_type = @lexer.lookahead_token.type
-    if lookahead_type == TokenType::ID ||
+    lookahead_type  = @lexer.lookahead_token.type
+    lookahead_value = @lexer.lookahead_token.value
+    node = AST.new(lookahead_value)
+    if (lookahead_type == TokenType::ID ||
       lookahead_type == TokenType::NUMBER ||
-      lookahead_type == TokenType::STRING
+      lookahead_type == TokenType::STRING)
       consume_token
     else
       raise_syntax_error(TokenType::ID, lookahead_type)
     end
+    return node
   end
 
   def match(token_type)

@@ -5,25 +5,26 @@ class AST
     @children = []
   end
 
-  def add_child(t)
-    @children.append(t)
+  def add_child(child)
+    @children << child
   end
 
-  def showChild
-    return print(@token)
+  def toShow(token)
+    return token.to_s
   end
+
 
   def to_string_tree
     if @children.length == 0
-      return showChild
+      return toShow(@token)
     end
-    buf = "(%s " % print(@token)
-    for i in Range.new(0,@children.length)
-      t = @children[i]
+    buf = "(%s " % toShow(@token)
+    for i in Range.new(0,@children.length - 1)
+      child = @children[i]
       if i > 0
-        buf += " "
-        buf += t.to_string_tree()
+        buf += ","
       end
+      buf += child.to_string_tree()
     end
     buf += ")"
     return buf
