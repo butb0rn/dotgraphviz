@@ -15,22 +15,20 @@ class Parser
     node_with_child = match_id
     node.add_child(node_with_child)
     match(TokenType::LBRACE)
-    node_with_child.add_child(parse_statement)
-    node_with_child.add_child(continue_parsing)
+    while @lexer.lookahead_token.type != TokenType::RBRACE
+      node_with_child.add_child(parse_statement)
+    end
+    match(TokenType::RBRACE)
     return node
   end
 
   def parse_statement
     return parse_appropriate_grammer_based_on_token
   end
-
-  def continue_parsing
-    if @lexer.lookahead_token.type == TokenType::RBRACE
-      match(TokenType::RBRACE)
-    else
-       parse_statement
-    end
-  end
+  #
+  # def continue_parsing
+  #   return parse_statement
+  # end
 
   def parse_appropriate_grammer_based_on_token
     @lexer.advance_token

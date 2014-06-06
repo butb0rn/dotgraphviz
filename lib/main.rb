@@ -5,8 +5,11 @@ require_relative "./parser/parser"
 
 healthy_code = <<-CODE
 digraph G {
-   parse -> execute;
    main -> printf [style=bold,label="100 times"];
+   execute -> make_string;
+   amain -> parse [weight=8];
+
+
 }
 
 CODE
