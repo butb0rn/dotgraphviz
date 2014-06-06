@@ -25,10 +25,6 @@ class Parser
   def parse_statement
     return parse_appropriate_grammer_based_on_token
   end
-  #
-  # def continue_parsing
-  #   return parse_statement
-  # end
 
   def parse_appropriate_grammer_based_on_token
     @lexer.advance_token
@@ -39,14 +35,18 @@ class Parser
     elsif @lexer.lookahead_token.type == KeyWord::NODE.upcase.to_sym
       parse_attr_statement
     else
-      parse_node_statement
+      return parse_node_statement
     end
   end
 
   def parse_node_statement
-    parse_node_id
-    parse_attr_list if @lexer.lookahead_token.type == TokenType::LBRACK
+    node = parse_node_id
+    if @lexer.lookahead_token.type == TokenType::LBRACK
+      node.add_child(parse_attr_list)
+    end
+    match(TokenType::RBRACK)
     match(TokenType::SEMICOLON)
+    return node
   end
 
   def parse_edge_statement
