@@ -48,10 +48,12 @@ class Parser
   def parse_edge_statement
     node = AST.new("ARROW")
     node.add_child(parse_node_id)
-    child_node = parse_edgeRHS
-    node.add_child(child_node)
-    child_node.add_child(parse_attr_list) if @lexer.lookahead_token.type == TokenType::LBRACK
-    match(TokenType::SEMICOLON)
+    node_with_child = parse_edgeRHS
+    node.add_child(node_with_child)
+    if @lexer.lookahead_token.type == TokenType::LBRACK
+      node_with_child.add_child(parse_attr_list)
+    end
+      match(TokenType::SEMICOLON)
     return node
   end
 
@@ -68,8 +70,9 @@ class Parser
 
   def parse_attr_list
     match(TokenType::LBRACK)
-    parse_a_list
+    node = parse_a_list
     match(TokenType::RBRACK)
+    return node
   end
 
   def parse_a_list
@@ -79,7 +82,7 @@ class Parser
     node.add_child(match_id)
     while @lexer.lookahead_token && @lexer.lookahead_token.type == TokenType::COMMA
       match(TokenType::COMMA)
-      parse_a_list
+      node.add_child(parse_a_list)
     end
     return node
   end

@@ -5,13 +5,10 @@ require_relative "./parser/parser"
 
 healthy_code = <<-CODE
 digraph G {
-    parse -> execute;
-    execute -> make_string;
-    main -> cleanup;
-    init -> make_string;
-    execute -> compare;
-    
- }
+   parse -> execute;
+   main -> printf [style=bold,label="100 times"];
+}
+
 CODE
 
 # Tokenizing the Code

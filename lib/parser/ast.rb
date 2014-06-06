@@ -22,7 +22,7 @@ class AST
     for i in Range.new(0,@children.length - 1)
       child = @children[i]
       if i > 0
-        buf += ","
+        buf += " "
       end
       buf += child.to_string_tree()
     end
