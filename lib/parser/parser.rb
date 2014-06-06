@@ -33,7 +33,7 @@ class Parser
     if token_type == TokenType::ARROW
       return parse_edge_statement
     elsif @lexer.lookahead_token.type == KeyWord::NODE.upcase.to_sym
-      parse_attr_statement
+      return parse_attr_statement
     else
       return parse_node_statement
     end
@@ -67,9 +67,16 @@ class Parser
   end
 
   def parse_attr_statement
+    node = AST.new("NODE")
     match_keyword(KeyWord::NODE)
-    parse_attr_list
+    node.add_child(parse_attr_list)
+    while @lexer.lookahead_token && @lexer.lookahead_token.type == TokenType::COMMA
+      match(TokenType::COMMA)
+      node.add_child(parse_a_list)
+    end
+    match(TokenType::RBRACK)
     match(TokenType::SEMICOLON)
+  return node
   end
 
   def parse_edgeRHS
