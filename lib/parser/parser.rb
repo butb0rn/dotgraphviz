@@ -22,7 +22,7 @@ class Parser
   def parse_statement
     node = parse_appropriate_grammer_based_on_token
     @lexer.lookahead_token.type == TokenType::RBRACE ?
-      match(TokenType::RBRACE) : parse_statement
+      match(TokenType::RBRACE) : node.add_child(parse_statement)
     return node
   end
 
@@ -47,8 +47,7 @@ class Parser
 
   def parse_edge_statement
     node = AST.new("ARROW")
-    x = parse_node_id
-    node.add_child(x)
+    node.add_child(parse_node_id)
     child_node = parse_edgeRHS
     node.add_child(child_node)
     child_node.add_child(parse_attr_list) if @lexer.lookahead_token.type == TokenType::LBRACK
